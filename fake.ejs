@@ -1,86 +1,180 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <title>Wiki Game of Thrones</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-
 <body>
+    <br>
+    <br>
+    <br>
+    
 
-
-    <div id="character-info"></div>
-    <p><strong>Nombre:</strong>
-        <%= character.fullName %>
-    </p>
-    <p><strong>Familia:</strong>
-        <%= character.family %>
-    </p>
-    <img src="<%= character.imageUrl %>" alt="Imagen de <%= character.fullName %>" style="width: 200px;">
-    </div>
-
-    <div class="card" style="width: 18rem;">
-        <img src="..." class="card-img-top" alt="...">
-        <div class="card-body">
-            <h5 class="card-title">Card title</h5>
-            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's
-                content.</p>
-            <!-- Button trigger modal -->
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                Launch demo modal
-            </button>
-
-        </div>
-    </div>
-
-
-
-    <!-- Modal -->
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="container mt-4">
+            <!-- Search  -->
+            <form action="/search" method="GET"class="mb-4">
+                <div class="input-group">
+                    <input type="text" name="search" id="searchInput" class="form-control" placeholder="Search character by name" aria-label="Search character by name">
+                    <button class="btn btn-primary" type="submit">Search</button>
                 </div>
-                <div class="modal-body">
-                    <img src="<%= character.imageUrl %>" alt="Imagen de <%= character.fullName %>"
-                        style="width: 200px;">
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save changes</button>
+            </form>
+    
+            <div id="character-info">
+                <p><strong>Nombre:</strong> <%= single.fullName %></p>
+                <p><strong>Familia:</strong> <%= single.family %></p>
+                <p><strong>Título:</strong> <%= single.title %></p>
+                <p><strong>Nacido:</strong> <%= single.born %></p>
+                <p><strong>Fallecido:</strong> <%= single.died %></p>
+                <p><strong>Alias:</strong> <%= single.aliases.join(', ') || 'None' %></p>
+                <img src="<%= single.imageUrl %>" alt="Imagen de <%= single.fullName %>" style="width: 200px;">
+            </div>
+            
+            <div class="card" style="width: 18rem;">
+                <img src="<%= single.familyCrest %>" class="card-img-top" alt="Escudo de la familia">
+                <div class="card-body">
+                    <h5 class="card-title"><%= single.fullName %></h5>
+                    <p class="card-text">
+                        <strong>Familia:</strong> <%= single.family %><br>
+                        <strong>Título:</strong> <%= single.title %><br>
+                        <strong>Nacido:</strong> <%= single.born %><br>
+                        <strong>Fallecido:</strong> <%= single.died %><br>
+                        <strong>Alias:</strong> <%= single.aliases.join(', ') || 'None' %>
+                    </p>
+                    <!-- Button trigger modal -->
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                        Launch demo modal
+                    </button>
                 </div>
             </div>
+            <div>
+                <a href="/prev">Anterior</a>
+                <a href="/nex">Siguiente</a>
+            </div>
+        
+        
+        
+            <!-- Modal -->
+            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <img src="<%= single.imageUrl %>" alt="Imagen de <%= single.fullName %>"
+                                style="width: 200px;">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary">Save changes</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+        
+           
+        
+
+<!-- aca empiezan todos los monos en columna -->
+        <div class="row">
+            <% characters.forEach((character, index) => { %>
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <img class="card-img-top" src="<%= character.imageUrl %>" alt="Image of <%= character.fullName %>" style="height: 200px; object-fit: cover;">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <a href="#" class="character-link" data-bs-toggle="modal" data-bs-target="#characterModal<%= index %>">
+                                    <%= character.fullName %>
+                                </a>
+                            </h5>
+                            <p class="card-text"><strong>Family:</strong> <%= character.family %></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal  -->
+                <div class="modal fade" id="characterModal<%= index %>" tabindex="-1" aria-labelledby="modalLabel<%= index %>" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="modalLabel<%= index %>"><%= character.fullName %></h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                              
+                                <img src="<%= character.imageUrl %>" alt="Image of <%= character.fullName %>" style="width: 100%; margin-bottom: 15px;">
+
+                                <p><strong>ID:</strong> <%= character.id %></p>
+                                <p><strong>First Name:</strong> <%= character.firstName %></p>
+                                <p><strong>Last Name:</strong> <%= character.lastName %></p>
+
+                             
+                                <p><strong>Born:</strong> <%= character.born ? character.born : 'Unknown' %></p>
+                                <p><strong>Died:</strong> <%= character.died ? character.died : 'Still alive or Unknown' %></p>
+
+                             
+                                <p><strong>Titles:</strong>
+                                    <% if (character.titles && character.titles.length > 0) { %>
+                                        <ul>
+                                            <% character.titles.forEach(title => { %>
+                                                <li><%= title %></li>
+                                            <% }) %>
+                                        </ul>
+                                    <% } else { %> 
+                                        None 
+                                    <% } %>
+                                </p>
+
+                                <p><strong>Aliases:</strong>
+                                    <% if (character.aliases && character.aliases.length > 0) { %>
+                                        <ul>
+                                            <% character.aliases.forEach(alias => { %>
+                                                <li><%= alias %></li>
+                                            <% }) %>
+                                        </ul>
+                                    <% } else { %> 
+                                        None 
+                                    <% } %>
+                                </p>
+
+                            
+                                <p><strong>Family:</strong> <%= character.family %></p>
+                                <p><strong>Family Crest:</strong>
+                                    <% if (character.familyCrest) { %>
+                                        <img src="<%= character.familyCrest %>" alt="Crest of <%= character.family %>" style="width: 100px;">
+                                    <% } else { %> 
+                                        None 
+                                    <% } %>
+                                </p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <% }) %>
         </div>
+
+        
     </div>
 
-
-    <div>
-        <a href="/previous">Anterior</a>
-        <a href="/next">Siguiente</a>
-    </div>
-
-<script>
-    const myModal = document.getElementById('myModal')
-const myInput = document.getElementById('myInput')
-
-myModal.addEventListener('shown.bs.modal', () => {
-  myInput.focus()
-})
-
-</script>
-
-    <script src="index.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
-        integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
-        crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"
-        integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy"
-        crossorigin="anonymous"></script>
+    <div class="container"></div>
+        <!-- Los controles  para ver más monos-->
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+                <li class="page-item <%= page === 0 ? 'disabled' : '' %>">
+                    <a class="page-link" href="/previous" tabindex="-1">Previous</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="/next">Next</a>
+                </li>
+            </ul>
+        </nav>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-
 </html>
