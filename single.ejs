@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= singleMono.fullName %></title>
+    <link href="https://fonts.googleapis.com/css2?family=Garamond&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="card mb-3">
+            <img src="<%= singleMono.imageUrl %>" class="card-img-top" alt="<%= singleMono.fullName %>">
+            <div class="card-body">
+                <h5 class="card-title"><%= singleMono.fullName %></h5>
+                <p class="card-text"><strong>ID:</strong> <%= singleMono.id %></p>
+                <p class="card-text"><strong>Titles:</strong> <%= singleMono.title %></p>
+                <p class="card-text"><strong>Family:</strong> <%= singleMono.family %></p>
+                <p class="card-text"><strong>Family Crest:</strong> <%= singleMono.familyCrest %></p>
+                <p class="card-text"><strong>Date of Birth:</strong> <%= singleMono.born %></p>
+                <p class="card-text"><strong>Date of Death:</strong> <%= singleMono.died %></p>
+                <p class="card-text"><strong>Aliases:</strong> <%= singleMono.aliases.join(', ') %></p>
+            </div>
+        </div>
+        <a href="/" class="btn btn-primary">Return to Main Menu</a>
+        <a href="/prev" class="btn btn-secondary">Previous Character</a>
+        <a href="/nex" class="btn btn-secondary">Next Character</a>
+    </div>
+    <script src="index.js"></script>
+</body>
+</html>

@@ -7,10 +7,12 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
 app.engine("html", require("ejs").renderFile);
 app.set("view engine", "ejs");
+var characterList;
 var contador = 0;
 let page = 0; 
+const perPage = 10; // cuantos monos por pagina 
 
-var characterList;
+//lista de familias para el display por familias
 var families = {
     'House Targaryen': 'Targaryen',
     'Targaryan': 'Targaryen',
@@ -162,7 +164,6 @@ app.get('/search', (req, res) => {
         return res.status(400).json({ error: 'q te pasa busca algo bien' });
     }
 
-   
     const url = `https://thronesapi.com/api/v2/Characters`;
 
     https.get(url, (response) => {
@@ -177,7 +178,7 @@ app.get('/search', (req, res) => {
                 return res.render("error", { message: 'No se encontraron personajes.' });
             }
 
-            
+            // Buscar personaje en la API de Thrones por nombre
             const foundCharacter = characterData.find(character =>
                 character.firstName.toLowerCase() === name.toLowerCase() ||
                 character.lastName.toLowerCase() === name.toLowerCase() ||
@@ -188,10 +189,8 @@ app.get('/search', (req, res) => {
                 return res.render("error", { message: 'Personaje no encontrado.' });
             }
 
-           
+            // Detalles del personaje en la API de Thrones
             const characterId = foundCharacter.id;
-
-           
             const characterUrl = `https://thronesapi.com/api/v2/Characters/${characterId}`;
 
             https.get(characterUrl, (response) => {
@@ -202,7 +201,7 @@ app.get('/search', (req, res) => {
                 }).on("end", () => {
                     const characterDetail = JSON.parse(characterDetailContent);
 
-                   
+                    // Ahora buscar en la API de Ice and Fire (opcional)
                     const iceAndFireUrl = `https://anapioficeandfire.com/api/characters?name=${encodeURIComponent(characterDetail.fullName)}`;
 
                     https.get(iceAndFireUrl, (response) => {
@@ -211,14 +210,17 @@ app.get('/search', (req, res) => {
                         response.on("data", (data) => {
                             iceContent += data;
                         }).on("end", () => {
-                            const iceCharacterData = JSON.parse(iceContent);
-                            const characterFound = iceCharacterData.find(character => character.name && character.name.toLowerCase() === characterDetail.fullName.toLowerCase());
-
-                            if (!characterFound) {
-                                return res.status(404).json({ error: 'Personaje no encontrado en Ice and Fire.' });
+                            let iceCharacterData = [];
+                            try {
+                                iceCharacterData = JSON.parse(iceContent);
+                            } catch (e) {
+                                console.error("Error al parsear datos de Ice and Fire:", e);
                             }
 
-                            
+                            // Si no existe el personaje en Ice and Fire, manejarlo graciosamente
+                            const characterFound = iceCharacterData.find(character => character.name && character.name.toLowerCase() === characterDetail.fullName.toLowerCase()) || {};
+
+                            // Fusionar datos de ambas APIs
                             const mergedCharacter = {
                                 imageUrl: characterDetail.imageUrl,
                                 id: characterDetail.id,
@@ -227,35 +229,52 @@ app.get('/search', (req, res) => {
                                 fullName: characterDetail.fullName,
                                 title: characterDetail.title,
                                 family: characterDetail.family,
-                                born: characterFound.born || 'Unknown',
-                                died: characterFound.died || 'Unknown',
-                                aliases: characterFound.aliases || [],
-                                familyCrest: 'URL_OF_FAMILY_CREST' 
+                                born: characterFound.born || 'Unknown',  // Si no existe, "Unknown"
+                                died: characterFound.died || 'Unknown',  // Si no existe, "Unknown"
+                                aliases: characterFound.aliases || [],  // Si no existe, vacío
+                                familyCrest: 'URL_OF_FAMILY_CREST' // Puede ser un campo por defecto si no lo tienes
                             };
 
-                           
-                            res.render("personajes", { characterData: mergedCharacter });
+                            // Renderizar la página con los datos del personaje fusionados
+                            res.render("personaje", { characterData: mergedCharacter });
                         }).on("error", (e) => {
                             console.error("Error en la API de Ice and Fire:", e);
+                            // En caso de error, solo mostrar los datos de la API de Thrones
+                            const mergedCharacter = {
+                                imageUrl: characterDetail.imageUrl,
+                                id: characterDetail.id,
+                                firstName: characterDetail.firstName,
+                                lastName: characterDetail.lastName,
+                                fullName: characterDetail.fullName,
+                                title: characterDetail.title,
+                                family: characterDetail.family,
+                                born: 'Unknown',
+                                died: 'Unknown',
+                                aliases: [],
+                                familyCrest: 'URL_OF_FAMILY_CREST'
+                            };
+                            res.render("personaje", { characterData: mergedCharacter });
                         });
                     });
                 }).on("error", (e) => {
                     console.error("Error en la API de Thrones:", e);
+                    res.status(500).json({ error: 'Error en la API de Thrones.' });
                 });
             });
         }).on("error", (e) => {
             console.error("Error:", e);
+            res.status(500).json({ error: 'Error en la búsqueda de personajes.' });
         });
     });
 });
+
+
 
 app.get('/nex', (req, res) => {
     if (contador < 52) {  
         contador += 1;
     }
-    else{
-        contador = 0;
-    }
+    res.redirect('/');
 });
 
 
@@ -263,7 +282,19 @@ app.get('/prev', (req, res) => {
     if (contador > 0) {
         contador -= 1;
     }
-    else{
-        contador = 52;
+    res.redirect('/');
+});
+
+
+
+app.get('/next', (req, res) => {
+    page += 1;
+    res.redirect('/');
+});
+
+app.get('/previous', (req, res) => {
+    if (page > 0) {
+        page -= 1;
     }
+    res.redirect('/');
 });
