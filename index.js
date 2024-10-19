@@ -9,7 +9,46 @@ app.engine("html", require("ejs").renderFile);
 app.set("view engine", "ejs");
 var contador = 0;
 let page = 0; 
-const perPage = 10; // cuantos monos por pagina 
+const perPage = 9; // cuantos monos por pagina 
+
+var characterList;
+var families = {
+    'House Targaryen': 'Targaryen',
+    'Targaryan': 'Targaryen',
+    'House Tarly': 'Tarly',
+    'House Stark': 'Stark',
+    'Stark': 'Stark',
+    'House Baratheon': 'Baratheon',
+    'Baratheon': 'Baratheon',
+    'House Lannister': 'Lannister',
+    'Lannister': 'Lannister',
+    'House Lanister': 'Lannister',
+    'House Greyjoy': 'Greyjoy',
+    'Greyjoy': 'Greyjoy',
+    'House Clegane': 'Clegane',
+    'House Baelish': 'Baelish',
+    'House Seaworth': 'Seaworth',
+    'Bronn': 'Bronn',
+    'House Tyrell': 'Tyrell',
+    'Tyrell': 'Tyrell',
+    'Free Folk': 'Free Folk',
+    'Qyburn': 'Qyburn',
+    'Worm': 'Worm',
+    'Tarth': 'Tarth',
+    'Naathi': 'Naathi',
+    'Bolton': 'Bolton',
+    'Naharis': 'Naharis',
+    'Lorathi': 'Lorathi',
+    'Mormont': 'Mormont',
+    'Sparrow': 'Sparrow',
+    'Viper': 'Viper',
+    'Lorath': 'Lorath',
+    'Sand': 'Sand',
+    'Unknown': 'Unknown',
+    'Unkown': 'Unknown',
+    '': 'Unknown',
+    'None': 'None'
+    };
 
 app.listen(3000, () => {
     console.log("Server running on port 3000");
@@ -54,8 +93,6 @@ app.get('/', (req, res) => {
                     };
 
                     // Obtener múltiples personajes
-                    const start = page * perPage;
-                    const end = start + perPage;
                     const thronesApiUrl = 'https://thronesapi.com/api/v2/Characters';
 
                     https.get(thronesApiUrl, (response) => {
@@ -64,7 +101,7 @@ app.get('/', (req, res) => {
                         response.on("data", (data) => {
                             multipleContent += data;
                         }).on("end", () => {
-                            const characters = JSON.parse(multipleContent).slice(start, end);
+                            const characters = JSON.parse(multipleContent);
 
                             const iceAndFirePromises = characters.map(character => {
                                 const iceAndFireUrl = `https://anapioficeandfire.com/api/characters?name=${encodeURIComponent(character.fullName)}`;
@@ -80,7 +117,7 @@ app.get('/', (req, res) => {
                                                 born: iceCharacterData[0]?.born || 'Unknown',
                                                 died: iceCharacterData[0]?.died || 'Unknown',
                                                 aliases: iceCharacterData[0]?.aliases || [],
-                                                familyCrest: 'URL_OF_FAMILY_CREST'
+                                                familyCrest: 'URL_OF_FAMILY_CREST',
                                             };
                                             resolve(mergedCharacter);
                                         }).on("error", reject);
@@ -89,8 +126,15 @@ app.get('/', (req, res) => {
                             });
 
                             Promise.all(iceAndFirePromises).then(mergedCharacters => {
-                                
-                                res.render("fake", { single: mergedCharacter, characters: mergedCharacters, contador, page });
+                                characterList = mergedCharacters;
+
+                                characterList.forEach(character => {
+                                    character.family = families[character.family] || 'Unknown';
+                                });
+
+                                console.log(characterList);
+                                var familyArr = new Set(Object.values(families));
+                                res.render("fake", { single: mergedCharacter, characters: mergedCharacters, contador, page, families: familyArr });
                             }).catch(error => {
                                 console.error("Error fetching data from Ice and Fire API", error);
                                 res.status(500).send("Error fetching data");
@@ -191,7 +235,7 @@ app.get('/search', (req, res) => {
                             };
 
                            
-                            res.render("personaje", { characterData: mergedCharacter });
+                            res.render("personajes", { characterData: mergedCharacter });
                         }).on("error", (e) => {
                             console.error("Error en la API de Ice and Fire:", e);
                         });
@@ -206,10 +250,12 @@ app.get('/search', (req, res) => {
     });
 });
 
-
 app.get('/nex', (req, res) => {
     if (contador < 52) {  
         contador += 1;
+    }
+    else{
+        contador = 0;
     }
     res.redirect('/');
 });
@@ -219,19 +265,8 @@ app.get('/prev', (req, res) => {
     if (contador > 0) {
         contador -= 1;
     }
-    res.redirect('/');
-});
-
-
-
-app.get('/next', (req, res) => {
-    page += 1;
-    res.redirect('/');
-});
-
-app.get('/previous', (req, res) => {
-    if (page > 0) {
-        page -= 1;
+    else{
+        contador = 52;
     }
     res.redirect('/');
 });

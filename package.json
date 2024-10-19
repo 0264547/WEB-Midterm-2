@@ -1,13 +1,14 @@
 {
-  "name": "parcial2cr",
+  "name": "web-midterm-2",
   "version": "1.0.0",
-  "description": "Second Partial Colaborative Project",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Carlos Cruz y Regina Gómez Padilla",
+  "keywords": [],
+  "author": "",
   "license": "ISC",
+  "description": "",
   "dependencies": {
     "ejs": "^3.1.10",
     "express": "^4.21.1",
