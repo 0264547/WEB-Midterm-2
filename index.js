@@ -9,7 +9,6 @@ app.engine("html", require("ejs").renderFile);
 app.set("view engine", "ejs");
 var contador = 0;
 let page = 0; 
-const perPage = 9; // cuantos monos por pagina 
 
 var characterList;
 var families = {
@@ -257,7 +256,6 @@ app.get('/nex', (req, res) => {
     else{
         contador = 0;
     }
-    res.redirect('/');
 });
 
 
@@ -268,5 +266,4 @@ app.get('/prev', (req, res) => {
     else{
         contador = 52;
     }
-    res.redirect('/');
 });

@@ -14,14 +14,18 @@
             <img src="<%= characterData.imageUrl %>" class="card-img-top" alt="<%= characterData.fullName %>">
             <div class="card-body">
                 <h5 class="card-title"><%= characterData.fullName %></h5>
-                <p class="card-text"><strong>Título:</strong> <%= characterData.title %></p>
-                <p class="card-text"><strong>Familia:</strong> <%= characterData.family %></p>
-                <p class="card-text"><strong>Nacido:</strong> <%= characterData.born %></p>
-                <p class="card-text"><strong>Fallecido:</strong> <%= characterData.died %></p>
+                <p class="card-text"><strong>ID:</strong> <%= characterData.id %></p>
+                <p class="card-text"><strong>Titles:</strong> <%= characterData.title %></p>
+                <p class="card-text"><strong>Family:</strong> <%= characterData.family %></p>
+                <p class="card-text"><strong>Family Crest:</strong> <%= characterData.familyCrest %></p>
+                <p class="card-text"><strong>Date of Birth:</strong> <%= characterData.born %></p>
+                <p class="card-text"><strong>Date of Death:</strong> <%= characterData.died %></p>
                 <p class="card-text"><strong>Aliases:</strong> <%= characterData.aliases.join(', ') %></p>
             </div>
         </div>
-        <a href="/" class="btn btn-primary">Volver a la página principal</a>
+        <a href="/" class="btn btn-primary">Return to Main Menu</a>
+        <a href="/prev" class="btn btn-secondary">Previous Character</a>
+        <a href="/nex" class="btn btn-secondary">Next Character</a>
     </div>
     <script src="index.js"></script>
 </body>
